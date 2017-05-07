@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 512d62b28920767418002e5f7422f43a
+timeCreated: 1492855157
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Wide awake
+  fontNames:
+  - Wide awake
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

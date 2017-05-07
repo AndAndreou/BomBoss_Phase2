@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 619c9177a89abbd48884a69f72ec30f3
+timeCreated: 1492855157
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Wide awake Black
+  fontNames:
+  - Wide awake Black
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
