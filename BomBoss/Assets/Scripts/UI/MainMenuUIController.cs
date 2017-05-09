@@ -220,7 +220,7 @@ public class MainMenuUIController : MonoBehaviour
 
             //update selectet button color
             SetButtonColors();
-            Input.ResetInputAxes();
+            //Input.ResetInputAxes();
         }
 
         if (selectInput == true)
@@ -276,7 +276,7 @@ public class MainMenuUIController : MonoBehaviour
 
             //set selected option color
             SetOptionsColors();
-            Input.ResetInputAxes();
+            //Input.ResetInputAxes();
         }
 
         if (horizontalInput != 0)
@@ -305,6 +305,11 @@ public class MainMenuUIController : MonoBehaviour
                         break;
                     case 3: //Volume
                         volume = Mathf.Min(volume + 0.1f, 1f);
+                        Audio audio = SoundManager.GetMusicAudio(backgroundMusic);
+                        if (audio != null)
+                        {
+                            audio.SetVolume(volume);
+                        }
                         PlayerPrefs.SetFloat("Volume", volume);
                         break;
                 }
@@ -333,6 +338,11 @@ public class MainMenuUIController : MonoBehaviour
                         break;
                     case 3: //Volume
                         volume = Mathf.Max(volume - 0.1f, 0f);
+                        Audio audio = SoundManager.GetMusicAudio(backgroundMusic);
+                        if (audio != null)
+                        {
+                            audio.SetVolume(volume);
+                        }
                         PlayerPrefs.SetFloat("Volume", volume);
                         break;
                 }
@@ -340,7 +350,7 @@ public class MainMenuUIController : MonoBehaviour
 
             //set text of options
             SetOptionsText();
-            Input.ResetInputAxes();
+            //Input.ResetInputAxes();
         }
     }
 

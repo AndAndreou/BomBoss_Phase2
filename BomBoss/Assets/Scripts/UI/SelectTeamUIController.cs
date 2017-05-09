@@ -29,6 +29,9 @@ public class SelectTeamUIController : MonoBehaviour {
 
     private float volume;
 
+    private float[] debounceHorizontal = new float[4];
+    private float repeat = 0.15f;  // reduce to speed up auto-repeat input
+
     private bool callOtherScene;
     // Use this for initialization
     void Start () {
@@ -56,15 +59,14 @@ public class SelectTeamUIController : MonoBehaviour {
         {
 
             //ready button
-            bool readyInput = Input.GetButton("ShootPlayer" + (i + 1).ToString());
+            bool readyInput = Input.GetButtonDown("ShootPlayer" + (i + 1).ToString());
             if((readyInput == true) && (teamOfEachController[i] != 0))
             {
-                playerReady[i] = true;
-                
+                playerReady[i] = true;  
             }
 
             //back button
-            bool backInput = Input.GetButton("MagnetPlayer" + (i + 1).ToString());
+            bool backInput = Input.GetButtonDown("MagnetPlayer" + (i + 1).ToString());
             if (backInput == true)
             {
                 //if all player is unready and some one press back button, then go to previous sscene
@@ -82,6 +84,13 @@ public class SelectTeamUIController : MonoBehaviour {
             }
 
             float horizontalInput = Input.GetAxis("HorizontalPlayer" + (i+1).ToString());
+            // BEGIN Debounce the input
+            if (Mathf.Abs(horizontalInput) < 0.1f) { debounceHorizontal[i] = 0.0f; }
+            else { debounceHorizontal[i] += Time.deltaTime; }
+            if (debounceHorizontal[i] < repeat) { horizontalInput = 0; }
+            else { debounceHorizontal[i] = 0; }
+            // END Debounce the input
+
             if (horizontalInput != 0)
             {
                 if (horizontalInput > 0.5f)
@@ -95,7 +104,7 @@ public class SelectTeamUIController : MonoBehaviour {
             }
         }
         SetUIControllersAnimator();
-        Input.ResetInputAxes();
+        //Input.ResetInputAxes();
     }
 
     private void SetUIControllersAnimator()
@@ -120,14 +129,28 @@ public class SelectTeamUIController : MonoBehaviour {
         bool isAllUnReady = true;
         int teamsCounter = 0;
         
-        for (int i = 0; i < playerReady.Length; i++)
+        if (!UnityEngine.Debug.isDebugBuild) 
         {
-            isAllReady = isAllReady && playerReady[i];
-            isAllUnReady = isAllUnReady && !playerReady[i];
-            teamsCounter += teamOfEachController[i];
+            // Check all 4 players if ready
+            for (int i = 0; i < playerReady.Length; i++)
+            {
+                isAllReady = isAllReady && playerReady[i];
+                isAllUnReady = isAllUnReady && !playerReady[i];
+                teamsCounter += teamOfEachController[i];
+            }
+        }
+        else
+        {
+            // To allow playing in debug mode with connected controllers
+            for (int i = 0; i < UnityEngine.Input.GetJoystickNames().Length; i++)
+            {
+                isAllReady = isAllReady && playerReady[i];
+                isAllUnReady = isAllUnReady && !playerReady[i];
+                teamsCounter = 0;
+            }
         }
 
-        if(isAllReady == true)
+        if (isAllReady == true)
         {
             if(teamsCounter == 0) //means teams is balance
             {

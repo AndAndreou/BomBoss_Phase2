@@ -129,7 +129,7 @@ public class SelectLevelController : MonoBehaviour
 
             //update selectet button color
             SetButtonColors();
-            Input.ResetInputAxes();
+            //Input.ResetInputAxes();
         }
 
         if (selectInput == true)
