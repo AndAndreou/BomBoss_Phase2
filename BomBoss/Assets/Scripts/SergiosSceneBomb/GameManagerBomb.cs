@@ -77,6 +77,7 @@ public class GameManagerBomb : MonoBehaviour {
 
     private void Awake()
     {
+        SetLevel();
         SetControllersInHoverCarsGO();
     }
 
@@ -374,6 +375,24 @@ public class GameManagerBomb : MonoBehaviour {
                 redTeamScoreBoard[redTeamIndex].score.text = playerStats.score.ToString();
                 redTeamIndex ++;
             }
+        }
+    }
+
+    private void SetLevel()
+    {
+        // Pick the level that was set in SelectTeam screen
+        int levelIndex = PlayerPrefs.GetInt("LevelIndex", 0);
+        string levelGOPrefix = "LVL";
+
+        if (levelIndex == 0)
+        {
+            GameObject.Find(levelGOPrefix + "1").SetActive(true);
+            GameObject.Find(levelGOPrefix + "2").SetActive(false);
+        }
+        else if (levelIndex == 1)
+        {
+            GameObject.Find(levelGOPrefix + "1").SetActive(false);
+            GameObject.Find(levelGOPrefix + "2").SetActive(true);
         }
     }
 

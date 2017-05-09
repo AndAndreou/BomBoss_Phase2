@@ -9,6 +9,7 @@ public class SelectTeamUIController : MonoBehaviour {
 
     [Header("GameObjects")]
     public GameObject loadingGO;
+    public GameObject instructionsGO;
 
     [Header("Animators")]
     public Animator[] controllers = new Animator[4];
@@ -118,6 +119,7 @@ public class SelectTeamUIController : MonoBehaviour {
         bool isAllReady = true;
         bool isAllUnReady = true;
         int teamsCounter = 0;
+        
         for (int i = 0; i < playerReady.Length; i++)
         {
             isAllReady = isAllReady && playerReady[i];
@@ -130,6 +132,7 @@ public class SelectTeamUIController : MonoBehaviour {
             if(teamsCounter == 0) //means teams is balance
             {
                 callOtherScene = true;
+                instructionsGO.SetActive(false);
                 loadingGO.SetActive(true);
                 StartCoroutine(GoNextScene());
             }
@@ -157,7 +160,7 @@ public class SelectTeamUIController : MonoBehaviour {
 
     private void GoPrevScene()
     {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("SelectLevel");
     }
 
 }

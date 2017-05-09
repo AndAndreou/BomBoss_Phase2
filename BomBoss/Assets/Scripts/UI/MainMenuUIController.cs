@@ -97,7 +97,7 @@ public class MainMenuUIController : MonoBehaviour
 
     public void PressNewGameButton()
     {
-        SceneManager.LoadScene("SelectTeam");
+        SceneManager.LoadScene("SelectLevel");
     }
 
     public void PressTutorialsButton()
