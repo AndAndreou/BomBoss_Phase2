@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class ShipController : MonoBehaviour {
 
+    GameManagerBomb gameManager;
+   public bool DeathDisplay = false;
     //for firing
     public GameObject shot;
     public Transform shotSpawn;
@@ -32,11 +34,12 @@ public class ShipController : MonoBehaviour {
 
     private float volume;
 
-    private string[] deathSlogans = new string[] { "dead", "you suck", "what a shame" };
+    private string[] deathSlogans = new string[] { "Dead", "You suck", "Boom!", "Destroyed", "What a shame", "Too slow", "Disgrace", "Try again", "Too bad" };
 
     // Use this for initialization
     void Start () {
 
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManagerBomb>();
         volume = PlayerPrefs.GetFloat("Volume", 1f);
         //0.1seconds after the game starts the function " cannonColldown " will be called.
         //The function will be called every X seconds (as set by the "cooldownRate" variable in the player inspector)
@@ -46,7 +49,7 @@ public class ShipController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetButton("Shoot" + hoverControl.myPlayer.ToString()) && (Time.time > nextFire) && (isOverheated == false))
+        if (Input.GetButton("Shoot" + hoverControl.myPlayer.ToString()) && (Time.time > nextFire) && (isOverheated == false) && (gameManager.canUsePowerUPS) && (!DeathDisplay))
         {
             nextFire = Time.time + fireRate; //Set the next available time for firing a missile
 
@@ -71,6 +74,7 @@ public class ShipController : MonoBehaviour {
 
     public void Die()
     {
+
         // print("this works");
 
         /*       
@@ -90,7 +94,7 @@ public class ShipController : MonoBehaviour {
 
         this.GetComponent<PlayerStats>().incrementDeaths();
         */
-
+        DeathDisplay = true;
         deathScreen.SetActive(true);
         deathScreen.GetComponentInChildren<Text>().text = deathSlogans[Mathf.FloorToInt(Random.Range(0, deathSlogans.Length))];
 
@@ -120,7 +124,7 @@ public class ShipController : MonoBehaviour {
         //re-initialize current health to max health when respawned
         ShipStatus shipStatus = GetComponent<ShipStatus>();
         shipStatus.currHealth = shipStatus.maxHealth;
-
+        DeathDisplay = false;
         this.GetComponent<PlayerStats>().incrementDeaths();
     }
 

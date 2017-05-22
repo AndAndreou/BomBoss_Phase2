@@ -9,10 +9,15 @@ public class ShipStatus : MonoBehaviour {
     ShipController shipController;
     MovementEngine movementEngine;
     Rigidbody rigidbody;
+    GameManagerBomb gameManager;
+
+    bool pua;
 
     //for Healing
     public float maxHealth = 100;
     public float currHealth;
+
+    public bool canUsePU = true;
 
     //for jumping
     Vector3 jumpVector = Vector3.up;
@@ -71,6 +76,8 @@ public class ShipStatus : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
+        //gameManager = GetComponent<GameManagerBomb>();
+
         bbCarRendere = bbCarGO.GetComponent<Renderer>();
         bbCarRendere.material = normalMaterial;
 
@@ -79,6 +86,7 @@ public class ShipStatus : MonoBehaviour {
         rigidbody = GetComponent<Rigidbody>();
         currHealth = maxHealth;
         bombController = GameObject.FindGameObjectWithTag(GameRepository.bombTag).GetComponent<BombController>();
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManagerBomb>();
         shipController = gameObject.GetComponent<ShipController>();
         currShieldHealth = maxShieldHealth;
         //jumpVector = new Vector3(0.0f, 1.0f, 0.0f);
@@ -86,6 +94,8 @@ public class ShipStatus : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+       
         SetHud();
 
         if ((currShieldHealth <= 0))
@@ -96,14 +106,14 @@ public class ShipStatus : MonoBehaviour {
         }
 
         //Check input from user to activate the power-ups
-        if (Input.GetButtonDown("Boost" + hoverControl.myPlayer.ToString()) && hasBoost)
+        if (Input.GetButtonDown("Boost" + hoverControl.myPlayer.ToString()) && hasBoost && gameManager.canUsePowerUPS && !shipController.DeathDisplay)
         {
             MyLog("B boost key was pressed, activated boost");
 
             StartCoroutine(boostMe());
         }
 
-        if (Input.GetButtonDown("Jump" + hoverControl.myPlayer.ToString()) && hasJump && jumpsLeft > 0)
+        if (Input.GetButtonDown("Jump" + hoverControl.myPlayer.ToString()) && hasJump && jumpsLeft > 0 && gameManager.canUsePowerUPS && !shipController.DeathDisplay)
         {
             MyLog("N jump key was pressed, activated jump");
 
@@ -116,7 +126,7 @@ public class ShipStatus : MonoBehaviour {
 
         }
 
-        if (Input.GetButtonDown("Shield" + hoverControl.myPlayer.ToString()) && hasShield)
+        if (Input.GetButtonDown("Shield" + hoverControl.myPlayer.ToString()) && hasShield && gameManager.canUsePowerUPS && !shipController.DeathDisplay)
         {
             MyLog("M shield key was pressed, activated shield"); //works
 

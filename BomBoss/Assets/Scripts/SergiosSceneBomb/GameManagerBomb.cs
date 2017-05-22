@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public class GameManagerBomb : MonoBehaviour {
 
+    public bool canUsePowerUPS = true;
+    
+
     [Header("Players GameObjects")]
     public GameObject[] playersGO = new GameObject[4];
 
@@ -67,6 +70,8 @@ public class GameManagerBomb : MonoBehaviour {
     public GameObject scoreBoardPanel;
     public GameObject textRedWinner;
     public GameObject textBlueWinner;
+    public GameObject textGray;
+    public GameObject textNobodyWins;
     public GameObject pausePanel;
     public GameObject endingScene;
 
@@ -91,6 +96,7 @@ public class GameManagerBomb : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+       
         volume = PlayerPrefs.GetFloat("Volume", 1f);
 
         offset = transform.position - bomb.transform.position;
@@ -140,6 +146,7 @@ public class GameManagerBomb : MonoBehaviour {
         if (currentState == RoundState.running)
         {
             SetState(RoundState.paused);
+            
         }
         else if (currentState == RoundState.paused)
         {
@@ -153,6 +160,8 @@ public class GameManagerBomb : MonoBehaviour {
         bomb.GetComponent<BombController>().Pause();
         Time.timeScale = 0.0f;
         pausePanel.SetActive(true);
+
+        canUsePowerUPS = false;
     }
 
     public void UnPauseRound()
@@ -161,6 +170,7 @@ public class GameManagerBomb : MonoBehaviour {
         SetState(RoundState.running);
         Time.timeScale = defaultTimeScale;
         pausePanel.SetActive(false);
+        canUsePowerUPS = true;
     }
 
     void ResetTimers()
@@ -338,20 +348,103 @@ public class GameManagerBomb : MonoBehaviour {
             {
                 blueTeamScore += playerStats.score;
             }
-            else
+            else if (hoverControl.myTeam == Team.red)
             {
                 redTeamScore += playerStats.score;
             }
         }
-
+        //blue team scored more goals
         if (blueTeamScore > redTeamScore)
         {
             return Team.blue;
         }
-        else
+        //red team scored more goals
+        else if (blueTeamScore < redTeamScore)
         {
             return Team.red;
         }
+        //The two teams are tied. Winner is the team with most kills /*if (blueTeamScore == redTeamScore)*/
+        else if (blueTeamScore == redTeamScore)
+        {
+            // Calculate winner based on kills if round finished because of time
+            int redTeamKills = 0;
+            int blueTeamKills = 0;
+
+            for (int i = 0; i < playersGO.Length; i++)
+            {
+                HoverControl hoverControl = playersGO[i].GetComponent<HoverControl>();
+                PlayerStats playerStats = playersGO[i].GetComponent<PlayerStats>();
+                if (hoverControl.myTeam == Team.blue)
+                {
+                    blueTeamKills += playerStats.kills;
+                    Debug.Log("Blue player kills ++");
+                }
+                else if (hoverControl.myTeam == Team.red)
+                {
+                    redTeamKills += playerStats.kills;
+                    Debug.Log("Red player kills ++");
+                }
+            }
+            Debug.Log("Blue kills: " + blueTeamKills + "Red kills: " + redTeamKills);
+
+            if (blueTeamKills > redTeamKills)
+            {
+                return Team.blue;
+                Debug.Log("Blue team wins");
+            }
+            //red team scored more kills
+            else if (blueTeamKills < redTeamKills)
+            {
+                return Team.red;
+                Debug.Log("red team wins");
+            }
+            //The two teams are tied. Winnes is the team with most kills
+            else if (blueTeamKills == redTeamKills)
+            {
+                // Calculate winner based on deaths if both teams have the same score
+                int redTeamDeaths = 0;
+                int blueTeamDeaths = 0;
+
+                for (int i = 0; i < playersGO.Length; i++)
+                {
+                    HoverControl hoverControl = playersGO[i].GetComponent<HoverControl>();
+                    PlayerStats playerStats = playersGO[i].GetComponent<PlayerStats>();
+                    if (hoverControl.myTeam == Team.blue)
+                    {
+                        blueTeamDeaths += playerStats.deaths;
+                        Debug.Log("Blue deaths kills ++");
+                    }
+                    else if (hoverControl.myTeam == Team.red)
+                    {
+                        redTeamDeaths += playerStats.deaths;
+                        Debug.Log("Red deaths kills ++");
+                    }
+                }
+
+                if (blueTeamDeaths > redTeamDeaths)
+                {
+                    return Team.red;
+                    Debug.Log("Red team wins");
+                }
+                //red team scored more kills
+                else if (blueTeamDeaths < redTeamDeaths)
+                {
+                    return Team.blue;
+                    Debug.Log("Blue team wins");
+                }
+                else {
+                    return Team.isNull;
+                    Debug.Log("Nobody wins");
+                }
+
+
+                //return Team.isNull;
+            }
+        }
+
+        return Team.isNull;
+
+       
     }
 
     private void SetScoreBoardUI()
@@ -373,6 +466,13 @@ public class GameManagerBomb : MonoBehaviour {
             // Hide/Unhide text based on who won
             textBlueWinner.SetActive(false);
             textRedWinner.SetActive(true);
+        }
+        else if(winner == Team.isNull)
+        {
+            textBlueWinner.SetActive(false);
+            textRedWinner.SetActive(false);
+            textGray.SetActive(false);
+            textNobodyWins.SetActive(true);
         }
 
         int blueTeamIndex = 0;
