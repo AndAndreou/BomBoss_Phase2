@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShipController : MonoBehaviour {
 
@@ -14,18 +15,25 @@ public class ShipController : MonoBehaviour {
     public int maxOverheat = 100;
     public float cooldownRate;
     public float cooldownAmount;
+    public float respawnTime = 5.0f;
 
     private bool isOverheated = false;
     private float nextFire;
 
     public Transform shipSpawn; // Spawn position
+    public Transform diePoint;
 
     public HoverControl hoverControl; // To fetch myPlayer
+
+    public GameObject deathScreen;
 
     [Header("Audio")]
     public AudioClip piouSFX;
 
     private float volume;
+
+    private string[] deathSlogans = new string[] { "dead", "you suck", "what a shame" };
+
     // Use this for initialization
     void Start () {
 
@@ -63,10 +71,10 @@ public class ShipController : MonoBehaviour {
 
     public void Die()
     {
-       // print("this works");
-               
+        // print("this works");
+
+        /*       
         gameObject.SetActive(false);
-       
         // Move it to the spawn point
         this.transform.position = shipSpawn.position;
         this.transform.rotation = shipSpawn.rotation; // Fix it's rotation
@@ -81,7 +89,39 @@ public class ShipController : MonoBehaviour {
         shipStatus.currHealth = shipStatus.maxHealth;
 
         this.GetComponent<PlayerStats>().incrementDeaths();
-       
+        */
+
+        deathScreen.SetActive(true);
+        deathScreen.GetComponentInChildren<Text>().text = deathSlogans[Mathf.FloorToInt(Random.Range(0, deathSlogans.Length))];
+
+        // Move it to the die point
+        this.transform.position = diePoint.position;
+        this.transform.rotation = diePoint.rotation; // Fix it's rotation
+
+        StartCoroutine(Respawn(respawnTime));
+    }
+
+    
+    IEnumerator Respawn(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Move it to the spawn point
+        this.transform.position = shipSpawn.position;
+        this.transform.rotation = shipSpawn.rotation; // Fix it's rotation
+        //yield return new WaitForSeconds(seconds);
+
+        deathScreen.SetActive(false);
+
+        this.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        this.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        //gameObject.SetActive(true);
+
+        //re-initialize current health to max health when respawned
+        ShipStatus shipStatus = GetComponent<ShipStatus>();
+        shipStatus.currHealth = shipStatus.maxHealth;
+
+        this.GetComponent<PlayerStats>().incrementDeaths();
     }
 
     //used for cannon mechanics

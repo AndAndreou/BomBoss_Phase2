@@ -48,6 +48,7 @@ public class GameManagerBomb : MonoBehaviour {
         public GameObject blueDoorLIcon;
         public GameObject blueDoorCIcon;
         public GameObject blueDoorRIcon;
+        public GameObject playerHUD;
     }
 
     [System.Serializable]
@@ -66,14 +67,20 @@ public class GameManagerBomb : MonoBehaviour {
     public GameObject scoreBoardPanel;
     public GameObject textRedWinner;
     public GameObject textBlueWinner;
+    public GameObject pausePanel;
+    public GameObject endingScene;
 
     [Header("Audio")]
     public AudioClip backgroundMusic;
     public AudioClip scoreBoardMusic;
+    public AudioClip level1_music;
+    public AudioClip level2_music;
 
     private float volume;
 
     private bool gameOverFlag;
+
+    private float defaultTimeScale = 1.0f;
 
     private void Awake()
     {
@@ -106,7 +113,7 @@ public class GameManagerBomb : MonoBehaviour {
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P) || Input.GetButtonDown("PausePlayer1"))
         {
             TogglePauseRound();
         }
@@ -142,13 +149,18 @@ public class GameManagerBomb : MonoBehaviour {
 
     void PauseRound()
     {
+        // TODO: Pause the hovercraft power-ups and shoot
         bomb.GetComponent<BombController>().Pause();
+        Time.timeScale = 0.0f;
+        pausePanel.SetActive(true);
     }
 
-    void UnPauseRound()
+    public void UnPauseRound()
     {
         bomb.GetComponent<BombController>().UnPause();
         SetState(RoundState.running);
+        Time.timeScale = defaultTimeScale;
+        pausePanel.SetActive(false);
     }
 
     void ResetTimers()
@@ -286,6 +298,16 @@ public class GameManagerBomb : MonoBehaviour {
 
     public void GameOver()
     {
+        foreach (GameObject playerGO in playersGO)
+        {
+            Camera playerCamera = playerGO.GetComponentInChildren<Camera>();
+            playerCamera.enabled = false;
+        }
+        foreach (HudComponents hudComponent in hudComponents)
+        {
+            hudComponent.playerHUD.SetActive(false);
+        }
+        endingScene.SetActive(true);
         SetScoreBoardUI();
         gameOverFlag = true;
         //after some sec return to main scene
@@ -388,11 +410,13 @@ public class GameManagerBomb : MonoBehaviour {
         {
             GameObject.Find(levelGOPrefix + "1").SetActive(true);
             GameObject.Find(levelGOPrefix + "2").SetActive(false);
+            backgroundMusic = level1_music;
         }
         else if (levelIndex == 1)
         {
             GameObject.Find(levelGOPrefix + "1").SetActive(false);
             GameObject.Find(levelGOPrefix + "2").SetActive(true);
+            backgroundMusic = level2_music;
         }
     }
 
